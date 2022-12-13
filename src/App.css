@@ -19,3 +19,43 @@ a:hover {
 .rs-toggle-checked .rs-toggle-presentation {
   background-color: #198754 !important;
 }
+.rs-modal-content {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* width */
+.rs-modal-body::-webkit-scrollbar,
+.rs-modal-wrapper::-webkit-scrollbar {
+  width: 0px;
+}
+
+/* Track */
+.rs-modal-body::-webkit-scrollbar-track ,
+.rs-modal-wrapper::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+.rs-modal-body::-webkit-scrollbar-thumb,
+.rs-modal-wrapper::-webkit-scrollbar-thumb {
+  background: #000;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+.rs-modal-body::-webkit-scrollbar-thumb:hover,
+.rs-modal-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #000;
+}
+.rs-modal-full {
+  margin: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  border-radius: 0 !important;
+  -webkit-border-radius: 0 !important;
+  -moz-border-radius: 0 !important;
+  -ms-border-radius: 0 !important;
+  -o-border-radius: 0 !important;
+}

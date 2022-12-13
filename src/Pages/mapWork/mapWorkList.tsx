@@ -17,7 +17,7 @@ import FormMapWork from "./mapWorkEdit"
 
 
 const MapWorkList = ( ) => {
-     let SelectMapWork = useAppSelector(selectMapWork)
+
 
      const [value, setValue] = useState("")
      const [loading, setLoading] = React.useState(false);
@@ -35,7 +35,7 @@ const MapWorkList = ( ) => {
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(limit);
     const [sortDir, setSortDir] = useState('DESC');
-    const dispatch = useAppDispatch()
+    let dispatch = useAppDispatch()
     const SelectIsLoading = useAppSelector(selectIsLoading)
     const [dataFilter, setDataFilter] = useState([])
     let [keyword, setKeyword] = useState("");
@@ -58,6 +58,7 @@ const MapWorkList = ( ) => {
      let data = SelectMapWork.filter((item:any) => removeVietnameseTones(item.name).toUpperCase().includes(convertUpperCase));
      setDataFilter(data)
 }, [keyword, value])
+let SelectMapWork = useAppSelector(selectMapWork)
 let data = keyword ? dataFilter : SelectMapWork
 const count = data.length
 
@@ -229,7 +230,7 @@ const count = data.length
           </div>
 
           </div>
-          <div className="lst__map__work p-3" style={{height: "calc(100vh - 200px)", overflow: "auto"}}>
+          <div className="lst__map__work p-3">
                {lstData.length ? lstData.map((item:any) => <MapWorkItem handleClickEdit={handleClickEdit} key={item.id} mapWorkItem={item}/>) : "Dữ liệu trống"}
           </div>
      </MapWorkListWrapper>

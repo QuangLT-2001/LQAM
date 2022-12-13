@@ -1,6 +1,7 @@
 import  {createSlice, PayloadAction, createAsyncThunk} from "@reduxjs/toolkit"
 
 import axios, { AxiosHeaders } from "axios";
+import { takeLatest } from "redux-saga/effects";
 
 import axiosClient from "./axiosClient";
 export interface TAuthState  {
@@ -49,6 +50,29 @@ export interface IMapWork {
      status?: boolean;
      coordinates?: string;
 }
+export interface IManagerCourse {
+     id?: string|number;
+     createdAt?: string|number;
+     name?: string;
+     department?: string;
+     rank?: any;
+     type?: string;
+     checkFinish?: string;
+     status?: boolean;
+     contentCourse?: ContentCourseState[];
+     totalStudent?:number;
+     totalFinish?: number;
+     endDate?: string|number;
+
+}
+export interface ContentCourseState {
+     chapter: string;
+     finish: string;
+     desc: string;
+     file: string;
+     slideShow: Array<[]>,
+
+}
 export interface AuthState {
      contract?: TAuthState[],
      isLoading: boolean,
@@ -57,10 +81,15 @@ export interface AuthState {
      listTimer?: ITimerState[]
      holiday?: IHolidayState[]
      timeDetail?: ITimerState | undefined,
-     mapWork?: IMapWork[]
+     mapWork?: IMapWork[];
+     managerCourse?: IManagerCourse[],
+     managerCourceDetail?: any,
+     imageSlide?: any,
+     lstChapter?: any,
+     lstFile?: any
 }
 
-const initialState: AuthState = {
+let initialState: AuthState = {
      contract: [],
      lishMent: [],
      isLoading: false,
@@ -68,10 +97,27 @@ const initialState: AuthState = {
      listTimer: [],
      holiday: [],
      timeDetail: undefined,
-     mapWork: []
+     mapWork: [],
+     managerCourse:[],
+     managerCourceDetail: {
+          contentCourse: [],
+          name: "",
+          department: "",
+          rank: "",
+          type: "",
+          checkFinish: "",
+          status: true,
+          endDate: "",
+          description: "",
+          lstStudent: []
+     },
+     imageSlide: [],
+     lstChapter: [],
+     lstFile: []
 }
 const BASE_URL = "https://622a9e9914ccb950d220ac3e.mockapi.io"
 const BASE_URL2 = "https://61c7b39990318500175474a1.mockapi.io/api"
+const BASE_URL3 = "https://62b147d3196a9e987032776f.mockapi.io/v10"
 export let getContract = createAsyncThunk("contract/getContract", async (thunkApi) => {
 
      try {
@@ -220,6 +266,46 @@ export const deleteMapWork = createAsyncThunk("mapWork/deleteMapWork", (params:a
           return respon
      }catch(err) {}
 })
+export const getListManagerCourse = createAsyncThunk("managerCourse/getListManagerCourse", (params:any) => {
+     try {
+          const respon = axios.get(`${BASE_URL3}/${params.url}`)
+          return respon;
+     }catch(err) {}
+})
+export const postManagerCourse = createAsyncThunk("managerCourse/postManagerCourse", (params:any) => {
+     try {
+          const respon = axios.post(`${BASE_URL3}/${params.url}`, params.object)
+          return respon;
+     } catch(err) {}
+})
+export const getManagerCourseByCode = createAsyncThunk("managerCourse/getManagerCourseByCode", (params:any) => {
+     try {
+          const respon = axios.get(`${BASE_URL3}/${params.url}/${params.id}`)
+          return respon
+     }catch(err) {}
+})
+export const deleteManagerCourse = createAsyncThunk("managerCourse/deleteManagerCourse", (params:any) => {
+     try {
+          const respon  = axios.delete(`${BASE_URL3}/${params.url}/${params.id}`)
+          return respon
+     } catch(err) {}
+})
+export const putManagerCourse = createAsyncThunk("managerCourse/putManagerCourse", (params:any) => {
+     try {
+          const respon = axios.put(`${BASE_URL3}/${params.url}/${params.id}`, params.object)
+          return respon
+     }catch(err) {}
+})
+export const postListImages = createAsyncThunk("imageSlide/postListImages", (params:any) => {
+     try {
+
+          const respon =  axios.post(params.url, params.formData, params.options).then(respon => respon.data)
+           return respon;
+     }catch(err) {
+
+
+     }
+})
 export const authSlice = createSlice({
      name: 'auth',
      initialState,
@@ -227,6 +313,18 @@ export const authSlice = createSlice({
            getLstContract(state, {payload}) {
                state.contract = payload
           },
+          deleteFile(state, action) {
+               const data = state.lstFile.filter((item:any, index:number) => index !== action.payload.id)
+               state.lstFile = data;
+          },
+          addChapter(state, action) {
+               state.lstChapter = [...state.lstChapter, action.payload]
+               state.managerCourceDetail?.contentCourse?.push(action.payload)
+
+          },
+          addFileSource(state, action) {
+               state.lstFile = state.lstFile.concat(action.payload)
+          }
 
      },
      extraReducers(builder) {
@@ -399,6 +497,63 @@ builder.addCase(deleteMapWork.fulfilled, (state,action) => {
      const data = state.mapWork?.filter(item => item.id !== action.payload?.data.id);
      state.mapWork = data;
 })
+builder.addCase(getListManagerCourse.pending, (state, action) => {
+     state.isLoading = true;
+})
+builder.addCase(getListManagerCourse.fulfilled, (state, action) => {
+     state.isLoading = false;
+     state.managerCourse = action.payload?.data
+})
+builder.addCase(postManagerCourse.pending, (state, action) => {
+     state.isLoading = true;
+})
+builder.addCase(postManagerCourse.fulfilled, (state, action) => {
+     state.isLoading = false;
+     state.managerCourse?.unshift(action.payload?.data)
+})
+builder.addCase(getManagerCourseByCode.pending, (state) => {
+     state.isLoading = true;
+})
+builder.addCase(getManagerCourseByCode.fulfilled, (state, action) => {
+     state.isLoading = false;
+     const data = action.payload?.data
+
+     state.managerCourceDetail =  data
+})
+builder.addCase(deleteManagerCourse.pending, (state, action) => {
+     state.isLoading = true;
+})
+builder.addCase(deleteManagerCourse.fulfilled, (state, action) => {
+     state.isLoading  = false;
+     const data  = state.managerCourse?.filter(item => item.id !== action.payload?.data.id);
+     state.managerCourse = data;
+})
+
+builder.addCase(postListImages.fulfilled, (state, action) => {
+     state.isLoading = false;
+     // let data  = action.payload;
+     // state.imageSlide = [...data]
+     console.log("action", action.payload);
+     state.imageSlide = state.imageSlide.concat(action.payload)
+
+
+
+})
+builder.addCase(putManagerCourse.pending, (state, action) => {
+     state.isLoading = true
+})
+builder.addCase(putManagerCourse.fulfilled, (state, action) => {
+     state.isLoading = false;
+
+     const data = state.managerCourse?.map(item => {
+          if(item.id === action.payload?.data.id) {
+               return action.payload?.data
+          }return item;
+     })
+     state.managerCourse = data;
+     // window.location.reload()
+
+})
 
      }
 })
@@ -420,4 +575,10 @@ export const selectListTimer = (state:any) => state.auth.listTimer;
 export const selectHoliday = (state:any) => state.auth.holiday;
 export const selectTimeDetail = (state:any) => state.auth.timeDetail;
 export const selectMapWork = (state:any) => state.auth.mapWork
+export const selectManagerCourse = (state:any) => state.auth.managerCourse;
+export const selectManagerCourceDetail = (state:any) => state.auth.managerCourceDetail;
+export const selectImageSlide = (state:any) => state.auth.imageSlide;
+export const selectLstChapter  = (state:any) => state.auth.lstChapter
+export const selectLstFile = (state:any) => state.auth.lstFile
+
 export default authReducer;

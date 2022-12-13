@@ -25,7 +25,7 @@ function App() {
           <HeaderMenu />
           <section className='main__body flex-grow-1 d-flex'>
               <SideBar />
-              <div className='w-100' style={{ background: "rgb(161 160 159 / 30%)" }}>
+              <div className='w-100' style={{height: "calc(100vh - 56px)", background: "#ffff", overflow: "auto"}}>
               <Routes>
                 <Route path="*" element={<Page404 />}/>
                 {RouterList.map(item => {

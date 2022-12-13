@@ -1,7 +1,7 @@
 import Input from "rsuite/Input"
 import InputGroup from "rsuite/InputGroup"
 
-type InputProps = {
+export type InputProps = {
      value?: string;
      name?: string;
      onChange?: any,

@@ -237,7 +237,7 @@ const TableStandard = (props) => {
           </div>
 
 
-          <div className="flex-grow-1 table-content bg-white" style={{ overflow: "auto", height: "calc(100vh - 219px)" }}>
+          <div className="flex-grow-1 table-content bg-white">
                <table className="table" cellPadding={30}>
                     <thead>
                          <tr>
