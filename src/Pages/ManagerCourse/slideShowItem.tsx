@@ -19,31 +19,34 @@ const SlideShowItem:React.FC<SlideShowItemProps> = (props) => {
 
 
      useEffect(() => {
+          const timer = setTimeout(() => {
+               const uploadImage = async() => {
+                    const url = "https://api.cloudinary.com/v1_1/nguy-n-v-n-qu-ng/upload";
+                    const formData = new FormData();
+                    formData.append("file", props.file);
+                    formData.append("upload_preset", "porwrdsf");
+                    const options = {
+                                   onUploadProgress: (progressEvent:any) => {
+                                        const { loaded, total } = progressEvent;
+                                        let percent = Math.floor((loaded * 100) / total);
+                                        setProcess(percent);
+                                   }
 
-          const url = "https://api.cloudinary.com/v1_1/nguy-n-v-n-qu-ng/upload";
-          const formData = new FormData();
-          formData.append("file", props.file);
-          formData.append("upload_preset", "porwrdsf");
-          const options = {
-                         onUploadProgress: (progressEvent:any) => {
-                              const { loaded, total } = progressEvent;
-                              let percent = Math.floor((loaded * 100) / total);
-                              setProcess(percent);
-                         }
-
-                    }
-                    dispatch(postListImages({
-                                   url: url,
-                                   formData: formData,
-                                   options: options
-                              }))
-
-
-                    setImageUrl(URL.createObjectURL(props.file))
+                              }
+                             await dispatch(postListImages({
+                                             url: url,
+                                             formData: formData,
+                                             options: options
+                                        }))
+               }
+               uploadImage()
+          }, 1)
+          setImageUrl(URL.createObjectURL(props.file))
+          return () => clearTimeout(timer)
      }, [props.file])
 
 
-     console.log("render slide to show");
+
      return <div className="slide-show-item">
      {/* <h5 className="name__image">
           {props.file.name}
