@@ -3,11 +3,12 @@ import { ManagerCourseDetailWrapper } from "./style";
 import {Table, Toggle} from "rsuite";
 import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import {useParams} from "react-router-dom"
+import {useParams, useNavigate} from "react-router-dom"
 import { getManagerCourseByCode , selectIsLoading, selectManagerCourceDetail} from "features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import moment from "moment"
 import FormCourseModal from "./formCourseModal";
+
 const {Column, Cell, HeaderCell} = Table
 
 const ManagerCourseDetail = () => {
@@ -17,6 +18,7 @@ const ManagerCourseDetail = () => {
      const SelectIsLoading = useAppSelector(selectIsLoading)
      const [dataModal, setDataModal] = useState<any>(undefined)
      const [open, setOpen] = useState(false)
+     const navigate = useNavigate()
      useEffect(() => {
           dispatch(getManagerCourseByCode({
                url: "managerCourse",
@@ -30,6 +32,15 @@ const ManagerCourseDetail = () => {
      const handleCloseModal = () => {
           setOpen(false)
      }
+     const handleClickToEdit = () => {
+          navigate(`/dao-tao/quan-ly-khoa-dao-tao/edit/${id}`)
+     }
+
+
+     const handleClickToLstQuestion = () => {
+          navigate(`/dao-tao/quan-ly-khoa-dao-tao/detail/danh-sach-cau-hoi-kiem-tra/${id}`)
+     }
+
      if(SelectIsLoading) return <>Loading...</>
      return <ManagerCourseDetailWrapper className="page__detail">
           {dataModal &&      <FormCourseModal
@@ -43,8 +54,8 @@ const ManagerCourseDetail = () => {
                     </h5>
                </div>
                <div className="btn__tab d-flex">
-                    <ButtonComponent name="Câu hỏi kiểm tra" className="me-3"/>
-                    <ButtonComponent name="Chỉnh sửa"/>
+                    <ButtonComponent name="Câu hỏi kiểm tra" className="me-3" onClick={handleClickToLstQuestion}/>
+                    <ButtonComponent name="Chỉnh sửa" onClick={handleClickToEdit}/>
                </div>
           </div>
           <div className="desc__course d-flex p-4 bg-white mt-2 mb-2 flex-wrap flex-md-row flex-column">
@@ -85,7 +96,7 @@ const ManagerCourseDetail = () => {
 
                          </label>
                          <p >
-                              {SelectManagerCourseDetail.desc ? SelectManagerCourseDetail.desc : "---"}
+                              {SelectManagerCourseDetail.description ? SelectManagerCourseDetail.description: "---"}
                          </p>
                     </div>
 
@@ -175,7 +186,7 @@ const ManagerCourseDetail = () => {
                <h4>
                     Nội dung khóa học
                </h4>
-               <Table data={SelectManagerCourseDetail.contentCourse} className="bg-white fs-6" style={{width: "100%"}}>
+               <Table autoHeight={true} data={SelectManagerCourseDetail.contentCourse} className="bg-white fs-6" style={{width: "100%"}}>
                     <Column width={300}>
                          <HeaderCell className="fw-bold fs-6">Chương</HeaderCell>
                          <Cell dataKey="chapter" className="hover-underline">

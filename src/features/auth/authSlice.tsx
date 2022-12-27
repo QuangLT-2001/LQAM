@@ -1,4 +1,5 @@
 import  {createSlice, PayloadAction, createAsyncThunk} from "@reduxjs/toolkit"
+import _ from "lodash"
 
 import axios, { AxiosHeaders } from "axios";
 import { takeLatest } from "redux-saga/effects";
@@ -86,7 +87,8 @@ export interface AuthState {
      managerCourceDetail?: any,
      imageSlide?: any,
      lstChapter?: any,
-     lstFile?: any
+     lstFile?: any,
+     lstChapterBackup?:any
 }
 
 let initialState: AuthState = {
@@ -113,7 +115,8 @@ let initialState: AuthState = {
      },
      imageSlide: [],
      lstChapter: [],
-     lstFile: []
+     lstFile: [],
+     lstChapterBackup: []
 }
 const BASE_URL = "https://622a9e9914ccb950d220ac3e.mockapi.io"
 const BASE_URL2 = "https://61c7b39990318500175474a1.mockapi.io/api"
@@ -306,6 +309,18 @@ export const postListImages = createAsyncThunk("imageSlide/postListImages", (par
 
      }
 })
+export const putManagerCourseAll = createAsyncThunk("managerCourse/putManagerCourseAll", (params:any) => {
+     try {
+          const respon = axios.put(`${BASE_URL3}/${params.url}/${params.id}`, params.object)
+          return respon;
+     }catch(err) {}
+})
+export const deleteCourse = createAsyncThunk("managerCourse/deleteCourse", (params:any) => {
+     try {
+          const respon = axios.delete(`${BASE_URL3}/${params.url}/${params.id}`)
+          return respon
+     }catch(err) {}
+})
 export const authSlice = createSlice({
      name: 'auth',
      initialState,
@@ -314,17 +329,55 @@ export const authSlice = createSlice({
                state.contract = payload
           },
           deleteFile(state, action) {
-               const data = state.lstFile.filter((item:any, index:number) => index !== action.payload.id)
-               state.lstFile = data;
+               const data = state.imageSlide.filter((item:any, index:number) => index !== action.payload.id);
+               state.imageSlide = data
           },
           addChapter(state, action) {
-               state.lstChapter = [...state.lstChapter, action.payload]
+               state.lstChapter = state.lstChapter.concat(action.payload)
                state.managerCourceDetail?.contentCourse?.push(action.payload)
 
           },
           addFileSource(state, action) {
                state.lstFile = state.lstFile.concat(action.payload)
+
+          },
+          deleteFileSource(state, action)  {
+               state.lstFile = state.lstFile.filter((item:any, index:any) => item.name !== action.payload.name)
+          },
+          updateFileSource(state) {
+               state.imageSlide = []
+               state.lstFile = []
+               state.lstChapter = []
+          },
+          addLstChapterBackup(state, action) {
+               state.lstChapterBackup = action.payload
+          },
+          postLstChapterBackup(state, action) {
+               state.lstChapterBackup.push(action.payload)
+          },
+          putLstChapterBackup(state, action)  {
+               const data = state.lstChapterBackup.map((item:any) => {
+                    if(item.id === action.payload.id) {
+                         return action.payload
+                    }else {
+                         return item
+                    }
+               })
+               state.lstChapterBackup = data
+
+          },
+          deleteChapterBackup(state, action)  {
+               const data = state.lstChapterBackup.filter((item:any) => item.id !== action.payload.id)
+               state.lstChapterBackup = data
+          },
+          addImageSlide(state,action) {
+               state.imageSlide = _.intersectionBy(state.imageSlide.concat(action.payload), "asset_id")
+
+          },
+          deleteImageSlide(state, action) {
+               state.lstFile = state.lstFile.filter((item:any, index:any) => item.asset_id !== action.payload.id)
           }
+
 
      },
      extraReducers(builder) {
@@ -531,9 +584,6 @@ builder.addCase(deleteManagerCourse.fulfilled, (state, action) => {
 
 builder.addCase(postListImages.fulfilled, (state, action) => {
      state.isLoading = false;
-     // let data  = action.payload;
-     // state.imageSlide = [...data]
-     console.log("action", action.payload);
      state.imageSlide = state.imageSlide.concat(action.payload)
 
 
@@ -554,7 +604,30 @@ builder.addCase(putManagerCourse.fulfilled, (state, action) => {
      // window.location.reload()
 
 })
+builder.addCase(putManagerCourseAll.pending, (state, action) => {
+     state.isLoading  = true
+})
+builder.addCase(putManagerCourseAll.fulfilled, (state, action) => {
+     state.isLoading = false;
+     const data = state.managerCourse?.map((item:any) => {
+          if(item.id === action.payload?.data.id) {
+               return action.payload?.data
+          }else {
+               return item
+          }
+     })
+     state.managerCourceDetail = data
 
+})
+builder.addCase(deleteCourse.pending, (state, action) => {
+     state.isLoading = true
+})
+builder.addCase(deleteCourse.fulfilled, (state, action) => {
+     state.isLoading = false
+     const data  = state.managerCourse?.filter((item:any) => item.id !== action.payload?.data.id)
+     state.managerCourse = data;
+
+})
      }
 })
 
@@ -580,5 +653,5 @@ export const selectManagerCourceDetail = (state:any) => state.auth.managerCource
 export const selectImageSlide = (state:any) => state.auth.imageSlide;
 export const selectLstChapter  = (state:any) => state.auth.lstChapter
 export const selectLstFile = (state:any) => state.auth.lstFile
-
+export const selectLstChapterBackup = (state:any) => state.auth.lstChapterBackup
 export default authReducer;

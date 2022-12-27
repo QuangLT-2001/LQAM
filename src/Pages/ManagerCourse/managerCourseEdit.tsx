@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import {useParams, useNavigate} from "react-router-dom"
 import React, {useState, useEffect, useRef, memo} from "react"
-import { getManagerCourseByCode, putManagerCourse, selectIsLoading, selectLstChapter, selectManagerCourceDetail } from "features/auth/authSlice";
+import { authSlice, getManagerCourseByCode, putManagerCourse, selectIsLoading, selectLstChapter, selectManagerCourceDetail } from "features/auth/authSlice";
 import { FormManagerCourseEditWrapper } from "./style";
 import ButtonComponent from "components/button";
 import {Form, InputGroup, Toggle, Button, SelectPicker, Input} from "rsuite"
@@ -9,7 +9,7 @@ import FormAddContent from "./formAddContent.js";
 import { v4 as uuidv4 } from "uuid"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faFileWord } from "@fortawesome/free-solid-svg-icons"
-const Textarea = React.forwardRef((props: any, ref: any) => <Input {...props} as="textarea" ref={ref} />);
+export const Textarea = React.forwardRef((props: any, ref: any) => <Input {...props} as="textarea" ref={ref} />);
 const ManagerCourseEdit = () => {
      const {id} = useParams();
      const dispatch:any = useAppDispatch();
@@ -38,7 +38,7 @@ const ManagerCourseEdit = () => {
           file: "",
           slideShow: [],
           infoContent: "",
-          id: uuidv4()
+
      })
 
      const navigate = useNavigate()
@@ -141,18 +141,7 @@ const ManagerCourseEdit = () => {
 
      const handleClickCancel = () => {
           setOpen(false)
-          setState({
-               name: "",
-               department: "",
-               rank: "",
-               description: "",
-               type: "",
-               checkFinish: "",
-               status: true,
-               lstStudent: [],
-               endDate: "",
-               contentCourse: []
-          })
+          dispatch(authSlice.actions.updateFileSource())
           setStateFormAdd({
                chapter: "",
                finish: "",
@@ -160,7 +149,7 @@ const ManagerCourseEdit = () => {
                file: "",
                slideShow: [],
                infoContent: "",
-               id: uuidv4()
+
           })
      }
      const handleClickToDT = () => {
@@ -183,10 +172,15 @@ const ManagerCourseEdit = () => {
                file: "",
                slideShow: [],
                infoContent: "",
-               id: uuidv4()
           })
           navigate("/dao-tao/quan-ly-khoa-dao-tao/")
      }
+
+
+
+
+
+
 
      if(SelectIsLoading) return <>Loading ...</>
      return <FormManagerCourseEditWrapper className="form-edit">
@@ -275,8 +269,10 @@ const ManagerCourseEdit = () => {
                               {lstHeaderTable.map(item => <th style={{width: "calc(100% / 3)"}}  key={item.id}>{item.name}</th>)}
                           </tr>
                          </thead>
+
                               {
-                              SelectManagerCourseDetail.contentCourse.length ? <tbody>
+                                   SelectManagerCourseDetail.contentCourse &&
+                                 SelectManagerCourseDetail.contentCourse.length  ? <tbody>
                                    {SelectManagerCourseDetail.contentCourse.map((item:any) => {
                                    return <tr key={item.id}>
                                    <td>{item.chapter}</td>
@@ -288,6 +284,7 @@ const ManagerCourseEdit = () => {
                               })}
                               </tbody> : ""
                               }
+
 
                     </table>
           </div>

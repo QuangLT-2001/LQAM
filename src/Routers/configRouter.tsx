@@ -10,6 +10,8 @@ import MapWorkList from 'Pages/mapWork/mapWorkList';
 import ManagerCourseList from 'Pages/ManagerCourse/managerCourseList';
 import ManagerCourseEdit from 'Pages/ManagerCourse/managerCourseEdit';
 import ManagerCourseDetail from 'Pages/ManagerCourse/managerCourseDetail';
+import FormEditCourse from 'Pages/ManagerCourse/formEditCourse';
+import Question from 'Pages/ManagerCourse/question';
 export interface RouterItem {
      id: string| number;
      path: string;
@@ -79,6 +81,16 @@ export const RouterList: RouterItem[] = [
      },
      {
           id: uuidv4(),
+          path: "/dao-tao/quan-ly-khoa-dao-tao/edit/:id",
+          mainMenuKey: "DT",
+          persmissions: "",
+          mainMenuTitle: "",
+          subMenuDrop: "",
+          subMenuTitle: "",
+          getPageElement: () => <FormEditCourse />
+     },
+     {
+          id: uuidv4(),
           path: "/dao-tao/quan-ly-khoa-dao-tao/detail/",
           mainMenuKey: "DT",
           persmissions: "",
@@ -86,6 +98,40 @@ export const RouterList: RouterItem[] = [
           subMenuDrop: "",
           subMenuTitle: "",
           getPageElement: () => <ManagerCourseDetail />
+     },
+
+     {
+          id: uuidv4(),
+          path: "/dao-tao/quan-ly-khoa-dao-tao/detail/danh-sach-cau-hoi-kiem-tra/:id",
+          mainMenuKey: "DT",
+          persmissions: "",
+          mainMenuTitle: "",
+          subMenuDrop: "",
+          subMenuTitle: "",
+          getPageElement: () => <Question />
+     },
+
+     {
+          id: uuidv4(),
+          path: "/dao-tao/quan-ly-khoa-dao-tao/detail/danh-sach-cau-hoi-kiem-tra/",
+          mainMenuKey: "DT",
+          persmissions: "",
+          mainMenuTitle: "",
+          subMenuDrop: "",
+          subMenuTitle: "",
+          getPageElement: () => <Question />
+     },
+
+
+     {
+          id: uuidv4(),
+          path: "/dao-tao/quan-ly-khoa-dao-tao/edit/",
+          mainMenuKey: "DT",
+          persmissions: "",
+          mainMenuTitle: "",
+          subMenuDrop: "",
+          subMenuTitle: "",
+          getPageElement: () => <FormEditCourse />
      },
      {
           id: uuidv4(),

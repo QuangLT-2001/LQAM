@@ -115,3 +115,7 @@ export const SlideShowItems = Styled.div`
           object-fit:cover;
      }
 `
+export const FormEditCourseWrapper = Styled.div`
+
+
+`
