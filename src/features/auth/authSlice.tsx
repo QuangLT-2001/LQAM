@@ -88,7 +88,8 @@ export interface AuthState {
      imageSlide?: any,
      lstChapter?: any,
      lstFile?: any,
-     lstChapterBackup?:any
+     lstChapterBackup?:any,
+     lstQuestion?:any
 }
 
 let initialState: AuthState = {
@@ -116,7 +117,8 @@ let initialState: AuthState = {
      imageSlide: [],
      lstChapter: [],
      lstFile: [],
-     lstChapterBackup: []
+     lstChapterBackup: [],
+     lstQuestion: []
 }
 const BASE_URL = "https://622a9e9914ccb950d220ac3e.mockapi.io"
 const BASE_URL2 = "https://61c7b39990318500175474a1.mockapi.io/api"
@@ -376,8 +378,10 @@ export const authSlice = createSlice({
           },
           deleteImageSlide(state, action) {
                state.lstFile = state.lstFile.filter((item:any, index:any) => item.asset_id !== action.payload.id)
+          },
+          addListQuestion(state, action) {
+               state.lstQuestion = action.payload;
           }
-
 
      },
      extraReducers(builder) {
@@ -654,4 +658,5 @@ export const selectImageSlide = (state:any) => state.auth.imageSlide;
 export const selectLstChapter  = (state:any) => state.auth.lstChapter
 export const selectLstFile = (state:any) => state.auth.lstFile
 export const selectLstChapterBackup = (state:any) => state.auth.lstChapterBackup
+export  const selectLstQuestion = (state:any) => state.auth.lstQuestion
 export default authReducer;

@@ -1,11 +1,11 @@
 import ButtonComponent from "components/button";
 import { FormEditCourseWrapper } from "./style"
 import {useParams, useNavigate} from "react-router-dom"
-import { useEffect, useRef, useState } from "react";
-import { deleteCourse, getManagerCourseByCode, putManagerCourseAll, selectImageSlide, selectIsLoading, selectLstChapter, selectLstChapterBackup, selectLstFile, selectManagerCourceDetail } from "features/auth/authSlice";
+import React, { useEffect, useRef, useState } from "react";
+import { deleteCourse, getManagerCourseByCode, putManagerCourseAll, selectImageSlide, selectIsLoading, selectLstChapter, selectLstChapterBackup, selectLstFile, selectLstQuestion, selectManagerCourceDetail } from "features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import moment from "moment";
-import { Button, Form, Modal, SelectPicker, Table, Toggle } from "rsuite";
+import { Button, Form, Modal, SelectPicker, Table, Toggle , List} from "rsuite";
 import { FormGroup } from "reactstrap";
 import { Textarea } from "./managerCourseEdit";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,13 +14,13 @@ import FormAddContent from "./formAddContent";
 import {v4 as uuidv4} from "uuid"
 import { authSlice } from "features/auth/authSlice";
 import RemindIcon from '@rsuite/icons/legacy/Remind';
+import TrashIcon from '@rsuite/icons/Trash'
+import InputComponent from "components/input";
 const {
      Column,
      HeaderCell,
      Cell
 } = Table
-
-
 const FormEditCourse = () => {
      const [state, setState] = useState<any>({
           name: "",
@@ -35,9 +35,7 @@ const FormEditCourse = () => {
           contentCourse: [],
           createdAt: ""
      })
-
      const navigate = useNavigate()
-
      const [open, setOpen] = useState(false)
      const [openPop, setOpenPop] = useState(false)
      const {id} = useParams();
@@ -45,9 +43,8 @@ const FormEditCourse = () => {
      const SelectManagerCourseDetail = useAppSelector(selectManagerCourceDetail)
      const SelectIsLoading = useAppSelector(selectIsLoading)
      const formRef:any = useRef();
-     const [dataEdit, setDataEdit] = useState<any>({})
-     const SelectImageSlide = useAppSelector(selectImageSlide)
      const SelectLstChapterBackup = useAppSelector(selectLstChapterBackup)
+     let SelectLstQuestion = useAppSelector(selectLstQuestion)
      const [stateFormAdd, setStateFormAdd] = useState<any>({
           chapter: "",
           finish: "",
@@ -56,11 +53,9 @@ const FormEditCourse = () => {
           slideShow: [],
           infoContent: "",
      })
-
+     const [question, setQuestion] = useState<any>([]);
      const [openQuestion, setOpenQuestion]  = useState<any>(false);
-
-     const [lstQuestion, setLstQuestion] = useState<any>([])
-
+     let [data,setData] = React.useState<any>(SelectManagerCourseDetail.lstQuestion);
      const type = ["Kiểm tra chương", "Kiểm tra kết thúc"].map(item => ({label: item, value: item}))
      const chapter  = SelectLstChapterBackup.map((item:any) => ({label: item.chapter, value: item.chapter}))
      useEffect(() => {
@@ -72,8 +67,8 @@ const FormEditCourse = () => {
      useEffect(() => {
           setState(SelectManagerCourseDetail)
           dispatch(authSlice.actions.addLstChapterBackup(SelectManagerCourseDetail.contentCourse))
+          dispatch(authSlice.actions.addListQuestion(SelectManagerCourseDetail.lstQuestion))
      }, [id, SelectIsLoading])
-
      const lstDepartment = [
           {
                label: "Nhân sự",
@@ -151,16 +146,15 @@ const FormEditCourse = () => {
                id: id
           }))
 
-
      }
-
      const handleClickUpdate = () => {
           dispatch(putManagerCourseAll({
                url: "managerCourse",
                id: id,
                object: {
                     ...state,
-                    contentCourse: SelectLstChapterBackup
+                    contentCourse: SelectLstChapterBackup,
+                    lstQuestion: [...data, ...question]
                }
           }))
           setState({
@@ -177,8 +171,6 @@ const FormEditCourse = () => {
                createdAt: ""
           })
           navigate("/dao-tao/quan-ly-khoa-dao-tao/")
-
-
      }
      const handleClickDeleteCourse = (id: any) => {
           dispatch(deleteCourse({
@@ -221,23 +213,32 @@ const FormEditCourse = () => {
           dispatch(authSlice.actions.addLstChapterBackup(SelectManagerCourseDetail.contentCourse))
           setOpenPop(false)
      }
-
      const handleOpenQuestion = () => {
           setOpenQuestion(true)
      }
-
      const handleChangeType = (event:any) => {
-          console.log("even", event);
-
      }
-
      const handleClickAddQuestion = () => {
+          setQuestion([...question, {
+               nameQuestion: "",
+               nameAnswer: "",
+               id: uuidv4()
+          }])
 
      }
+     const handleSortEnd = ({ oldIndex, newIndex }: any) =>
+     setQuestion((prvData:any) => {
+       let moveData = prvData.splice(oldIndex, 1);
+       let newData = [...prvData];
+       newData.splice(newIndex, 0, moveData[0]);
+       return newData;
+     });
 
 
-
-
+     const handleClickDeleteQuestion = (id: any) => {
+          let dataQuestion = data.filter((item:any) => item.id !== id);
+          setData(dataQuestion)
+     }
 
      if(SelectIsLoading) return <>Loading...</>
      return <FormEditCourseWrapper className="page__edit">
@@ -301,8 +302,41 @@ const FormEditCourse = () => {
                     <ButtonComponent name="Export Excel"  appearance="subtle" />
                </div>
 
-               <div className="frm-question-content">
+               <div className="frm-question-content p-3">
+                    <List style={{boxShadow: "none"}} sortable onSort={handleSortEnd}>
+                    {data.length ? data.map(({ nameQuestion, nameAnswer, id }:any, index:any) => (
+                              <List.Item disabled  style={{boxShadow: "none"}} className="p-3 d-flex align-items-start" key={index} index={index}>
+                                   <ButtonComponent
+                                        icon={<TrashIcon />}
+                                        onClick={() => handleClickDeleteQuestion(id)}
+                                   />
+                                   <span className="pt-2 pb-2 pe-3 ps-3 d-inline-block">
+                                   {index + 1}
+                                   </span>
+                                   <div className="question-content w-100">
+                                        <InputComponent className="form-control" value={nameQuestion ? nameQuestion : "Nhập câu hỏi..."}/>
+                                        <br />
+                                        <InputComponent className="form-control" value={nameAnswer ? nameAnswer : "Nhập câu trả lời mẫu..."}/>
+                                   </div>
+                              </List.Item>
+                    )) : ""}
 
+               {question.length ? question.map(({ nameQuestion, nameAnswer }:any, index:any) => (
+                              <List.Item   style={{boxShadow: "none"}} className="p-3 d-flex align-items-start" key={index} index={index}>
+                                   <ButtonComponent
+                                        icon={<TrashIcon />}
+                                   />
+                                   <span className="pt-2 pb-2 pe-3 ps-3 d-inline-block">
+                                   {index + 1 + SelectLstQuestion.length}
+                                   </span>
+                                   <div className="question-content w-100">
+                                        <InputComponent className="form-control" value={nameQuestion ? nameQuestion : "Nhập câu hỏi..."}/>
+                                        <br />
+                                        <InputComponent className="form-control" value={nameAnswer ? nameAnswer : "Nhập câu trả lời mẫu..."}/>
+                                   </div>
+                              </List.Item>
+                    )) : ""}
+                    </List>
                </div>
           </>}
 

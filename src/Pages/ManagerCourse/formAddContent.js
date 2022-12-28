@@ -38,7 +38,7 @@ const FormAddContent = (props) => {
      useEffect(() => {
           const timer = setTimeout(() => {
                if (state.id) {
-                    setTextValue(state.desc)
+                    setTextValue(state.infoContent)
                     dispatch(authSlice.actions.addFileSource([...state.slideShow]))
                     dispatch(authSlice.actions.addChapter(state))
                     dispatch(authSlice.actions.addImageSlide(state.slideShow))
@@ -70,8 +70,6 @@ const FormAddContent = (props) => {
                if (respon.status == 200 || respon.status == 201) {
                     setLinkFile(respon.data.url)
                     setSize(respon.data.bytes)
-
-
                }
           });
      }
@@ -118,7 +116,7 @@ const FormAddContent = (props) => {
                     }))
                     dispatch(authSlice.actions.postLstChapterBackup({
                          ...state,
-                         linkFile: linkFile ? linkFile : "",
+                         linkFile: linkFile,
                          file: file.name ? file.name : "",
                          slideShow: SelectImageSlide.length ? SelectImageSlide : [],
                          infoContent: content,
@@ -169,7 +167,7 @@ const FormAddContent = (props) => {
           dispatch(authSlice.actions.deleteImageSlide(id))
      }
 
-   
+
 
      return <FormAddContentWrapper>
           <Modal open={open} size="md" onClose={handleClickCancel}>

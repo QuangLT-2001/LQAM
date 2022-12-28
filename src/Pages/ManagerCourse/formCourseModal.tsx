@@ -3,6 +3,16 @@ import {useState, useEffect} from "react"
 import { FormCourseModalWrapper, SlideShowItems, DisplayFile } from "./style";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileWord } from "@fortawesome/free-solid-svg-icons";
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+
+
+// Import styles
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
+import PDFViewer from "./pdfViewer";
+
+
+
 type FormCourseModalProps = {
      open?: boolean;
      setOpen?: any;
@@ -39,23 +49,30 @@ const FormCourseModal:React.FC<FormCourseModalProps> = (props) => {
      const handleClickOpenModal = () => {
           setOpenModal(true)
      }
+     const handleCloseModal = () => {
+          setOpenModal(false)
+     }
+
      if(openModal) return <>
-          <Modal size="full" style={{height: "100vh"}} className="bg-white" open={openModal}>
+          <Modal size="full" style={{height: "100vh", overflow: "hidden"}} className="bg-white" open={openModal} onClose={handleCloseModal}>
                <Modal.Header className=" p-3 d-flex align-items-center lh-1" style={{background: "rgb(213 213 213 / 90%)"}}>
                     <Modal.Title className="fw-bold fs-5">
                          {props.data.chapter}
                     </Modal.Title>
                </Modal.Header>
-               <Modal.Body className="m-0" style={{height: "calc(100vh - 57px)", maxHeight: "100%"}}>
-               <iframe
-               src={`${props.data.linkFile}`}
-               width="100%"
-               height="100%"
+               <Modal.Body className="m-0" style={{height: "calc(100vh - 57px)", maxHeight: "100%", padding: 0}}>
+               <div style={{height: "100%"}}>
 
-                />
+
+               <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.1.81/build/pdf.worker.min.js">
+                    <PDFViewer  fileUrl={props.data.linkFile}/>
+               </Worker>
+</div>
                </Modal.Body>
           </Modal>
      </>
+
+
 
      return <FormCourseModalWrapper className="form__modal">
           <Modal size="lg" open={props.open} onClose={props.handleCloseModal} style={{overflow: "hidden"}}>

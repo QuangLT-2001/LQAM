@@ -8,7 +8,8 @@ export type InputProps = {
      placeholder?: string,
      label?: string|undefined|number,
      icon?: any,
-     style?: any
+     style?: any,
+     className?: any
 }
 const InputComponent:React.FC<InputProps>  = (props) => {
      return <div className="d-flex align-items-center">
@@ -16,7 +17,7 @@ const InputComponent:React.FC<InputProps>  = (props) => {
      <InputGroup style={props.style ? props.style : null}>
 
          {props.icon && props.icon}
-    <Input placeholder={props.placeholder} value={props.value} name={props.name} onChange={props.onChange}/>
+    <Input placeholder={props.placeholder} className={props.className} value={props.value} name={props.name} onChange={props.onChange}/>
 
 </InputGroup></div>
 }
