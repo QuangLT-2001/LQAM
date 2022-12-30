@@ -137,15 +137,15 @@ const dispatch = useAppDispatch()
      }
      return <FormWrapper classNames="frm">
           <Modal open={open} onClose={handleClickCancel}>
-        <Modal.Header>
+        <Modal.Header className="p-3">
           <Modal.Title>{state.id ? "Chỉnh sửa loại hợp đồng" : "Thêm loại hợp đồng"}</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>
+        <Modal.Body className="p-3">
 
           {body()}
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className="p-3">
         {state.id ? <Button  onClick={handleClickUpdate} color="green" appearance="primary">
             Cập nhật
           </Button> : <Button onClick={handleClickSave} color="green" appearance="primary">

@@ -12,6 +12,10 @@ import ManagerCourseEdit from 'Pages/ManagerCourse/managerCourseEdit';
 import ManagerCourseDetail from 'Pages/ManagerCourse/managerCourseDetail';
 import FormEditCourse from 'Pages/ManagerCourse/formEditCourse';
 import Question from 'Pages/ManagerCourse/question';
+import KPIDashboard from 'Pages/KPI Dashboard/kpi';
+import KPIInOutDTL from 'Pages/Kpi_InOutDTL/kpi_inoutDtl';
+import ManagerKpiInOut from 'Pages/managerKpiInOut/managerKpiInOut';
+import RegisterKpiInOut from 'Pages/registerKpiInOut/registerKpiInOut';
 export interface RouterItem {
      id: string| number;
      path: string;
@@ -38,8 +42,44 @@ export const RouterList: RouterItem[] = [
           persmissions: "",
           mainMenuTitle: "KPI",
           subMenuDrop: "",
-          getPageElement: () => <ManagerTodo />
+          subMenuTitle: "KPI Dashboard",
+          getPageElement: () => <KPIDashboard />
      },
+
+     {
+          id: uuidv4(),
+          path: "/KPI/tong-hop-thoi-gian-in-out/",
+          mainMenuKey: "KPI",
+          persmissions: "",
+          mainMenuTitle: "",
+          subMenuDrop: "",
+          subMenuTitle: "Tổng hợp thời gian in/out",
+          getPageElement: () => <KPIInOutDTL />
+     },
+
+     {
+          id: uuidv4(),
+          path: "/KPI/quan-ly-in-out-cho-khach/",
+          mainMenuKey: "KPI",
+          persmissions: "",
+          mainMenuTitle: "",
+          subMenuDrop: "",
+          subMenuTitle: "Quản lý in/out cho khách",
+          getPageElement: () => <ManagerKpiInOut />
+     },
+
+     {
+          id: uuidv4(),
+          path: "/KPI/quan-ly-in-out-cho-khach/dang-ky-in-out-cho-khach/",
+          mainMenuKey: "KPI",
+          persmissions: "",
+          mainMenuTitle: "",
+          subMenuDrop: "",
+          subMenuTitle: "",
+          getPageElement: () => <RegisterKpiInOut />
+     },
+
+
      {
           id: uuidv4(),
           path: "/nhan-su/",
