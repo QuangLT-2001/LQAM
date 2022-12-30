@@ -226,6 +226,7 @@ const RegisterKpiInOut = () => {
           <h4 className="text-uppercase">
             Danh sách người làm việc cùng: <span style={{ color: '#04AA6D' }}>0</span>
           </h4>
+          
         </div>
       </div>
     </>
