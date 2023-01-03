@@ -88,6 +88,7 @@ export interface AuthState {
   lstChapterBackup?: any;
   lstQuestion?: any;
   lstKpi?: any;
+  kpiDetail?: any;
 }
 
 let initialState: AuthState = {
@@ -118,6 +119,7 @@ let initialState: AuthState = {
   lstChapterBackup: [],
   lstQuestion: [],
   lstKpi: [],
+  kpiDetail: undefined,
 };
 const BASE_URL = 'https://622a9e9914ccb950d220ac3e.mockapi.io';
 const BASE_URL2 = 'https://61c7b39990318500175474a1.mockapi.io/api';
@@ -352,6 +354,19 @@ export const getLstKpi = createAsyncThunk('Kpi/getLstKpi', (params: any) => {
 export const deleteKpi = createAsyncThunk('Kpi/deleteKpi', (params: any) => {
   try {
     const respon = axios.delete(`${BASE_URL3}/${params.url}/${params.id}`);
+    return respon;
+  } catch (err) {}
+});
+export const putKpi = createAsyncThunk('Kpi/putKpi', (params: any) => {
+  try {
+    const respon = axios.put(`${BASE_URL3}/${params.url}/${params.id}`, params.obj);
+    return respon;
+  } catch (err) {}
+});
+
+export const getKpiByCode = createAsyncThunk('Kpi/getKpiByCode', (params: any) => {
+  try {
+    const respon = axios.get(`${BASE_URL3}/${params.url}/${params.id}`);
     return respon;
   } catch (err) {}
 });
@@ -672,13 +687,33 @@ export const authSlice = createSlice({
     });
 
     builder.addCase(deleteKpi.pending, (state, action) => {
-     state.isLoading = true;
-   });
-   builder.addCase(deleteKpi.fulfilled, (state, action) => {
-     state.isLoading = false;
-     const data = state.lstKpi.filter((item:any) => item.id !== action.payload?.data.id)
-     state.lstKpi = data
-   });
+      state.isLoading = true;
+    });
+    builder.addCase(deleteKpi.fulfilled, (state, action) => {
+      state.isLoading = false;
+      const data = state.lstKpi.filter((item: any) => item.id !== action.payload?.data.id);
+      state.lstKpi = data;
+    });
+    builder.addCase(putKpi.pending, (state, action) => {
+      state.isLoading = true;
+    });
+    builder.addCase(putKpi.fulfilled, (state, action) => {
+      state.isLoading = false;
+      const data = state.lstKpi.map((item: any) => {
+        if (item.id === action.payload?.data.id) {
+          return action.payload?.data;
+        }
+        return item;
+      });
+      state.lstKpi = data;
+    });
+    builder.addCase(getKpiByCode.pending, (state, action) => {
+      state.isLoading = true;
+    });
+    builder.addCase(getKpiByCode.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.kpiDetail = action.payload?.data;
+    });
   },
 });
 
@@ -703,4 +738,5 @@ export const selectLstFile = (state: any) => state.auth.lstFile;
 export const selectLstChapterBackup = (state: any) => state.auth.lstChapterBackup;
 export const selectLstQuestion = (state: any) => state.auth.lstQuestion;
 export const selectLstKpi = (state: any) => state.auth.lstKpi;
+export const selectKpiDetail = (state: any) => state.auth.kpiDetail;
 export default authReducer;

@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import MoreIcon from '@rsuite/icons/More';
 import moment from 'moment';
+import TableKpiItem from './tableKpiItem';
 const ManagerKpiInOutLst: React.FC<any> = (props) => {
   const { data } = props;
   let count = data.length;
@@ -68,125 +69,53 @@ const ManagerKpiInOutLst: React.FC<any> = (props) => {
   // let sortData = data.reverse()
   let lstData = getData();
 
-  const selectControl = [
+  const columns = [
     {
       id: 1,
-      name: 'Sửa',
-      keyControl: 1,
+      name: '',
+      width: 130,
     },
     {
       id: 2,
-      name: 'Xóa',
-      keyControl: 2,
+      name: 'Tên khách',
+      width: 170,
     },
     {
       id: 3,
-      name: 'Duyệt',
-      keyControl: 3,
+      name: 'Số giấy tờ',
+      width: 150,
     },
     {
       id: 4,
-      name: 'Từ chối',
-      keyControl: 4,
+      name: 'Loại giấy tờ',
+      width: 150,
+    },
+    {
+      id: 5,
+      name: 'Công ty',
+      width: 200,
+    },
+    {
+      id: 6,
+      name: 'Đối tác của',
+      width: 170,
+    },
+    {
+      id: 7,
+      name: 'Thời gian làm việc',
+      width: 170,
+    },
+    {
+      id: 8,
+      name: 'Thực tế in/out',
+      width: 170,
+    },
+    {
+      id: 9,
+      name: 'Trạng thái',
+      width: 150,
     },
   ];
-
-  const handleClickControl = (key: any) => {
-    console.log('key', key);
-  };
-
-  const speaker = (
-    <Popover>
-      {selectControl.map((item) => (
-        <p onClick={() => handleClickControl(item.keyControl)} key={item.id}>
-          {item.name}
-        </p>
-      ))}
-    </Popover>
-  );
-
-  const renderMenu = ({ onClose, left, top, className }: any, ref: any) => {
-    const handleSelect = (eventKey: any) => {
-      onClose();
-      console.log(eventKey);
-      console.log('row');
-    };
-    return (
-      <Popover ref={ref} className={className} style={{ left, top }} full>
-        <Dropdown.Menu onSelect={handleSelect}>
-          <Dropdown.Item eventKey={1}>Sửa</Dropdown.Item>
-          <Dropdown.Item eventKey={2}>Xóa</Dropdown.Item>
-          <Dropdown.Item eventKey={3}>Duyệt</Dropdown.Item>
-          <Dropdown.Item eventKey={4}>Từ chối</Dropdown.Item>
-        </Dropdown.Menu>
-      </Popover>
-    );
-  };
-
-  const ActionCell = ({ rowData, dataKey, ...props }: any) => {
-    return (
-      <Table.Cell {...props} className="link-group" style={{ padding: 6 }}>
-        <Checkbox />
-        <Whisper placement="autoVerticalStart" trigger="click" speaker={renderMenu}>
-          <IconButton
-            style={{ background: 'transparent' }}
-            appearance="subtle"
-            icon={<MoreIcon />}
-          />
-        </Whisper>
-      </Table.Cell>
-    );
-  };
-
-  const status = (status: any) => {
-    switch (status) {
-      case 1:
-        return (
-          <span
-            className="p-1 d-inline-block text-white"
-            style={{ background: '#298ef2', borderRadius: 5 }}
-          >
-            Đã duyệt
-          </span>
-        );
-      case 0:
-        return (
-          <span
-            className="p-1 d-inline-block  text-white"
-            style={{ background: '#e5a800', borderRadius: 5 }}
-          >
-            Chờ duyệt
-          </span>
-        );
-      case 2:
-        return (
-          <span
-            className="p-1 d-inline-block text-white"
-            style={{ background: '#00703c', borderRadius: 5 }}
-          >
-            Đã check-in
-          </span>
-        );
-      case 3:
-        return (
-          <span
-            className="p-1 d-inline-block text-white"
-            style={{ background: 'rgb(229 56 192)', borderRadius: 5 }}
-          >
-            Đã check-out
-          </span>
-        );
-      case 4:
-        return (
-          <span
-            className="p-1 d-inline-block text-white"
-            style={{ background: '#818181', borderRadius: 5 }}
-          >
-            Từ chối
-          </span>
-        );
-    }
-  };
 
   return (
     <>
@@ -287,13 +216,8 @@ const ManagerKpiInOutLst: React.FC<any> = (props) => {
           </PaginationWrapper>
         </div>
       </div>
-      <div className="content__table">
-        <Table data={lstData}>
-          <Table.Column fixed="left">
-            <Table.HeaderCell>{''}</Table.HeaderCell>
-            <ActionCell dataKey="id" />
-          </Table.Column>
-
+      <div className="content__table w-100" style={{ overflow: 'hidden' }}>
+        {/* <Table data={lstData} autoHeight={true}>
           <Table.Column width={200}>
             <Table.HeaderCell className="fw-bold">{'Tên khách'}</Table.HeaderCell>
             <Table.Cell dataKey="name" />
@@ -351,16 +275,33 @@ const ManagerKpiInOutLst: React.FC<any> = (props) => {
               }}
             </Table.Cell>
           </Table.Column>
-
-          <Table.Column width={200} align="center">
-            <Table.HeaderCell className="fw-bold">{'Trạng thái'}</Table.HeaderCell>
-            <Table.Cell style={{ padding: 6 }}>
-              {(rowData) => {
-                return <>{status(rowData.status)}</>;
-              }}
-            </Table.Cell>
-          </Table.Column>
-        </Table>
+        </Table> */}
+        <table className="table w-100" style={{ overflowX: 'auto' }}>
+          <thead className="table-secondary">
+            <tr>
+              {columns.map((item) => {
+                return (
+                  <th key={item.id} className="text-center" style={{ width: item.width }}>
+                    {item.name}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {lstData.length ? (
+              lstData.map((item: any) => {
+                return <TableKpiItem key={item.id} tableKpiItem={item} />;
+              })
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className="text-center">
+                  Dữ liệu trống
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </>
   );
