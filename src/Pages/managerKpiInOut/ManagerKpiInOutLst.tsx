@@ -1,23 +1,9 @@
 import { faAngleDown, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PaginationWrapper } from 'Pages/LishMent/style';
-import {
-  Pagination,
-  Dropdown,
-  Table,
-  Checkbox,
-  Whisper,
-  Popover,
-  IconButton,
-  Form,
-  SelectPicker,
-  DatePicker,
-  TagPicker,
-} from 'rsuite';
-import React, { useState, useEffect, useRef } from 'react';
+import { Pagination, Dropdown, Checkbox, Form, SelectPicker, DatePicker, TagPicker } from 'rsuite';
+import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import MoreIcon from '@rsuite/icons/More';
-import moment from 'moment';
 import TableKpiItem from './tableKpiItem';
 import { removeVietnameseTones } from 'utils/utils';
 import { DropdownWrapper } from './style';
@@ -126,7 +112,6 @@ const ManagerKpiInOutLst: React.FC<any> = (props) => {
     if (col) return col.name;
     return '---Default---';
   };
-  // let sortData = data.reverse()
   let lstData = getData();
 
   const columns = [
@@ -228,12 +213,23 @@ const ManagerKpiInOutLst: React.FC<any> = (props) => {
         };
       }
     }
-    if (currentFIlter.company && currentFIlter.status) {
+    if (
+      currentFIlter.company &&
+      currentFIlter.status &&
+      currentFIlter.timeWorkStart &&
+      currentFIlter.timeWorkEnd
+    ) {
       const datas = lstData.filter((item: any) => {
         let status = _.intersection([item.status], currentFIlter.status);
-        return item.company === currentFIlter.company && status.length;
+        return (
+          (item.company === currentFIlter.company && status.length) ||
+          (new Date(item.timeWorkStart).getTime() >=
+            new Date(currentFIlter.timeWorkStart).getTime() &&
+            new Date(item.timeWorkEnd).getTime() <= new Date(currentFIlter.timeWorkEnd).getTime())
+        );
       });
       setDataFilter(datas);
+      setStatus(false);
     } else {
       alert('Mời bạn chọn lại!!!');
     }
@@ -410,7 +406,7 @@ const ManagerKpiInOutLst: React.FC<any> = (props) => {
                   }}
                   key={uuidv4()}
                   style={{ width: 200, display: 'flex', justifyContent: 'space-between' }}
-                  className={limit == n ? 'text-green' : ''}
+                  className={limit == n ? 'text-success' : ''}
                 >
                   {n} {limit == n ? <FontAwesomeIcon icon={faCheck} /> : <></>}
                 </Dropdown.Item>

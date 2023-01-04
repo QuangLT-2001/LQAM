@@ -2,11 +2,10 @@ import React, { useRef, useState } from 'react';
 import { Editor } from "@tinymce/tinymce-react";
 import { TextareaEditorWrapper } from './style';
 const TextareaEditor = (props) => {
-     const { editorRef, textValue, onChange } = props;
+     const { editorRef, textValue } = props;
      return (
           <TextareaEditorWrapper>
                <Editor
-                    // onChange={onChange}
                     apiKey='vhms429g7bdf5b0f8d7spish5h6prbnn13g94il44256dhg6'
                     onInit={(evt, editor) => editorRef.current = editor}
                     initialValue={textValue}

@@ -1,8 +1,8 @@
 import ButtonComponent from 'components/button';
 import MoreIcon from '@rsuite/icons/More';
 import React, { useState, useEffect } from 'react';
-import { Form, SelectPicker, DatePicker, InputGroup, Input, Table, Dropdown } from 'rsuite';
-import moment from 'moment';
+import { Form, SelectPicker, DatePicker, Input, Table, Dropdown } from 'rsuite';
+
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import {
   deleteKpi,

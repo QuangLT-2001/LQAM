@@ -79,27 +79,6 @@ const TableStandard = (props) => {
                     return data.slice(start, end)
           }
      }
-     const columns = [
-          {
-               id: 1,
-               label: ""
-          },
-          {
-               id: 2,
-               label: "Loại hợp đồng",
-               width: 300
-          },
-          {
-               id: 3,
-               label: "Mô tả",
-               width: 300
-          },
-          {
-               id: 4,
-               label: "Trạng thái",
-               width: 300
-          }
-     ]
      let dispatch = useAppDispatch();
      const handleClickDelete = (id) => {
           dispatch(deleteContract({
