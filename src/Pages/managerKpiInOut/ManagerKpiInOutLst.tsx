@@ -1,29 +1,56 @@
 import { faAngleDown, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PaginationWrapper } from 'Pages/LishMent/style';
-import { Pagination, Dropdown, Table, Checkbox, Whisper, Popover, IconButton } from 'rsuite';
-import React, { useState, useEffect } from 'react';
+import {
+  Pagination,
+  Dropdown,
+  Table,
+  Checkbox,
+  Whisper,
+  Popover,
+  IconButton,
+  Form,
+  SelectPicker,
+  DatePicker,
+  TagPicker,
+} from 'rsuite';
+import React, { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import MoreIcon from '@rsuite/icons/More';
 import moment from 'moment';
 import TableKpiItem from './tableKpiItem';
+import { removeVietnameseTones } from 'utils/utils';
+import { DropdownWrapper } from './style';
+import ButtonComponent from 'components/button';
+import _ from 'lodash';
 const ManagerKpiInOutLst: React.FC<any> = (props) => {
   const { data } = props;
   let count = data.length;
   const [limit, setLimit] = React.useState(10);
   const [page, setPage] = React.useState(1);
-  const [sortBy, setSortBy] = React.useState('');
-  const defaultHList: any[] = [];
-  const [hiddenList, setHiddenList] = useState(defaultHList);
-
-  const defaultCheckKeys: any[] = [];
-  const [checkedKeys, setCheckedKeys] = React.useState(defaultCheckKeys);
+  const [sortBy, setSortBy] = React.useState('DESC');
   const sortLimitValues = [10, 20, 30, 50, 100];
-  const [sortColumn, setSortColumn] = React.useState();
-  const [sortType, setSortType] = React.useState();
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(limit);
-  const [sortDir, setSortDir] = useState('DESC');
+  const [sortDir, setSortDir] = useState<any>('name');
+  const [valueDateStart, setValueDateStart] = useState<any>(null);
+  const [valueDateEnd, setValueDateEnd] = useState<any>(null);
+  const [state, setState] = useState<any>({
+    company: '',
+    status: null,
+    timeWorkStart: valueDateStart,
+    timeWorkEnd: valueDateEnd,
+  });
+  let currentFIlter: any = {};
+  const [status, setStatus] = useState<any>(false);
+  const [dataFilter, setDataFilter] = useState<any>([]);
+  useEffect(() => {
+    setState({
+      ...state,
+      timeWorkStart: valueDateStart,
+      timeWorkEnd: valueDateEnd,
+    });
+  }, [valueDateEnd, valueDateStart]);
   useEffect(() => {
     setStart(page * limit - limit);
     setEnd(page * limit);
@@ -32,10 +59,17 @@ const ManagerKpiInOutLst: React.FC<any> = (props) => {
     setLimit(10);
     setPage(1);
   }, [count]);
-
   const compareByName = (obj1: any, obj2: any) => {
-    if (obj1.typeContract > obj2.typeContract) return 1;
-    else if (obj1.typeContract < obj2.typeContract) return -1;
+    if (
+      removeVietnameseTones(obj1[sortDir].toLowerCase()) >
+      removeVietnameseTones(obj2[sortDir].toLowerCase())
+    )
+      return 1;
+    else if (
+      removeVietnameseTones(obj1[sortDir].toLowerCase()) <
+      removeVietnameseTones(obj2[sortDir].toLowerCase())
+    )
+      return -1;
     return 0;
   };
 
@@ -54,17 +88,43 @@ const ManagerKpiInOutLst: React.FC<any> = (props) => {
   const selectFilter = [
     {
       id: 1,
-      name: 'ASC',
+      name: 'Sắp xếp tăng dần',
+      keyFilter: 'DESC',
     },
     {
       id: 2,
-      name: 'DESC',
+      name: 'Sắp xếp giảm dần',
+      keyFilter: 'ASC',
     },
   ];
+
+  const criteriaFilter = [
+    {
+      id: 1,
+      name: 'Thời gian làm việc',
+      keyCriteria: 'name',
+    },
+    {
+      id: 2,
+      name: 'Thời gian check-in',
+      keyCriteria: 'timeWorkStart',
+    },
+    {
+      id: 3,
+      name: 'Thời gian check-out',
+      keyCriteria: 'timeWorkEnd',
+    },
+    {
+      id: 4,
+      name: 'Công ty',
+      keyCriteria: 'company',
+    },
+  ];
+
   const getCurrentSortBy = () => {
-    const col = selectFilter.find((item) => item.name == sortBy);
+    const col = selectFilter.find((item) => item.keyFilter == sortBy);
     if (col) return col.name;
-    return 'Name';
+    return '---Default---';
   };
   // let sortData = data.reverse()
   let lstData = getData();
@@ -117,38 +177,209 @@ const ManagerKpiInOutLst: React.FC<any> = (props) => {
     },
   ];
 
+  const dataPicker = data.map((item: any) => {
+    return { label: item.company, value: item.company };
+  });
+  const dataSelect = [
+    {
+      keySelect: 0,
+      name: 'Chờ duyệt',
+    },
+    {
+      keySelect: 1,
+      name: 'Đã duyệt',
+    },
+    {
+      keySelect: 2,
+      name: 'Đã check-in',
+    },
+    {
+      keySelect: 3,
+      name: 'Đã check-out',
+    },
+    {
+      keySelect: 4,
+      name: 'Từ chối',
+    },
+  ].map((item) => ({ label: item.name, value: item.keySelect }));
+  const handleClickToggle = () => {
+    setStatus((state: any) => !state);
+  };
+
+  const handleChangeInput = (event: any) => {
+    if (event.length) {
+      setState({
+        ...state,
+        status: event,
+      });
+    } else {
+      setState({
+        ...state,
+        status: null,
+      });
+    }
+  };
+  const handleClickOK = () => {
+    for (let key in state) {
+      if (state[key]) {
+        currentFIlter = {
+          ...currentFIlter,
+          [key]: state[key],
+        };
+      }
+    }
+    if (currentFIlter.company && currentFIlter.status) {
+      const datas = lstData.filter((item: any) => {
+        let status = _.intersection([item.status], currentFIlter.status);
+        return item.company === currentFIlter.company && status.length;
+      });
+      setDataFilter(datas);
+    } else {
+      alert('Mời bạn chọn lại!!!');
+    }
+  };
+
+  let newData = state.company && state.status ? dataFilter : lstData;
+
   return (
     <>
       <div className="header__table d-flex justify-content-between border-bottom p-3 border-secondary text-dark">
         <div className="sort__by d-flex align-items-center">
-          <Checkbox />
-          Sort By
-          <Dropdown
-            renderToggle={(props: any, ref: any) => {
-              return (
-                <span {...props}>
-                  {/* <input value={limit} readOnly style={{ width: "32px", "padding": "0px 3px 0px 3px", "border": "solid 1px #ccc" }} /> */}
-                  <span className="ms-3">
-                    {getCurrentSortBy()} <FontAwesomeIcon icon={faAngleDown} />
+          <div className="d-flex align-items-center">
+            <Checkbox />
+            <span className="text-secondary">Sort By:</span>
+            <Dropdown
+              renderToggle={(props: any, ref: any) => {
+                return (
+                  <span {...props}>
+                    <span className="ms-3">
+                      {getCurrentSortBy()} <FontAwesomeIcon icon={faAngleDown} />
+                    </span>
                   </span>
-                </span>
-              );
-            }}
-          >
-            {selectFilter.map((item) => {
-              return (
-                <Dropdown.Item
-                  onClick={() => setSortBy(item.name)}
-                  key={uuidv4()}
-                  style={{ width: 200, display: 'flex', justifyContent: 'space-between' }}
-                  className={sortBy == item.name ? 'text-green' : ''}
-                >
-                  {item.name}
-                  {item.name == sortBy ? <FontAwesomeIcon icon={faCheck} /> : <></>}
-                </Dropdown.Item>
-              );
-            })}
-          </Dropdown>
+                );
+              }}
+            >
+              {criteriaFilter.map((item) => {
+                return (
+                  <Dropdown.Item
+                    onClick={() => setSortDir(item.keyCriteria)}
+                    key={uuidv4()}
+                    style={{ width: 200, display: 'flex', justifyContent: 'space-between' }}
+                    className={sortDir == item.keyCriteria ? 'text-success' : ''}
+                  >
+                    {item.name}
+                    {item.keyCriteria == sortDir ? <FontAwesomeIcon icon={faCheck} /> : <></>}
+                  </Dropdown.Item>
+                );
+              })}
+              <Dropdown.Item>
+                <hr className="m-0" style={{ border: '1px solid #000' }} />
+              </Dropdown.Item>
+              {selectFilter.map((item) => {
+                return (
+                  <Dropdown.Item
+                    onClick={() => setSortBy(item.keyFilter)}
+                    key={uuidv4()}
+                    style={{ width: 200, display: 'flex', justifyContent: 'space-between' }}
+                    className={sortBy == item.keyFilter ? 'text-success' : ''}
+                  >
+                    {item.name}
+                    {item.keyFilter == sortBy ? <FontAwesomeIcon icon={faCheck} /> : <></>}
+                  </Dropdown.Item>
+                );
+              })}
+            </Dropdown>
+          </div>
+          <span className="me-4 ms-4 text-secondary">|</span>
+          <DropdownWrapper status={status} className="d-flex align-items-center">
+            <h6 className="label fw-normal" onClick={handleClickToggle}>
+              Filter:
+              <span className="ms-3">
+                <FontAwesomeIcon icon={faAngleDown} />
+              </span>
+            </h6>
+            <div className="dropdown p-3" style={{ width: 350 }}>
+              <Form fluid formValue={state} onChange={setState}>
+                <Form.Group>
+                  <Form.ControlLabel>Tổ chức</Form.ControlLabel>
+                  <Form.Control
+                    placeholder="Chọn"
+                    name="company"
+                    style={{ flexGrow: 1, width: '100%' }}
+                    accepter={SelectPicker}
+                    data={dataPicker}
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.ControlLabel>Ngày</Form.ControlLabel>
+                  <div className="d-flex align-items-center w-100">
+                    <DatePicker
+                      format="yyyy-MM-dd"
+                      locale={{
+                        sunday: 'Su',
+                        monday: 'Mo',
+                        tuesday: 'Tu',
+                        wednesday: 'We',
+                        thursday: 'Th',
+                        friday: 'Fr',
+                        saturday: 'Sa',
+                        ok: 'OK',
+                        today: 'Today',
+                        yesterday: 'Yesterday',
+                        hours: 'Hours',
+                        minutes: 'Minutes',
+                        seconds: 'Seconds',
+                      }}
+                      className="flex-grow-1"
+                      value={valueDateStart}
+                      name="timeWorkStart"
+                      onChange={setValueDateStart}
+                    />
+                    <span className="me-2 ms-2">-</span>
+                    <DatePicker
+                      format="yyyy-MM-dd"
+                      className="flex-grow-1"
+                      locale={{
+                        sunday: 'Su',
+                        monday: 'Mo',
+                        tuesday: 'Tu',
+                        wednesday: 'We',
+                        thursday: 'Th',
+                        friday: 'Fr',
+                        saturday: 'Sa',
+                        ok: 'OK',
+                        today: 'Today',
+                        yesterday: 'Yesterday',
+                        hours: 'Hours',
+                        minutes: 'Minutes',
+                        seconds: 'Seconds',
+                      }}
+                      value={valueDateEnd}
+                      name="timeWorkStart"
+                      onChange={setValueDateEnd}
+                    />
+                  </div>
+                </Form.Group>
+                <Form.Group>
+                  <Form.ControlLabel>Trạng thái</Form.ControlLabel>
+                  <TagPicker
+                    placeholder="Chọn"
+                    data={dataSelect}
+                    className="w-100 text-success"
+                    color="green"
+                    onChange={handleChangeInput}
+                  />
+                </Form.Group>
+              </Form>
+              <ButtonComponent
+                name="OK"
+                appearance="primary"
+                color="green"
+                className="w-100 mt-3 mb-3"
+                onClick={handleClickOK}
+              />
+            </div>
+          </DropdownWrapper>
         </div>
         <div className="pagination__by d-flex align-items-center">
           <span className="text-gray d-flex align-items-center me-3">Hiển thị:</span>
@@ -217,65 +448,6 @@ const ManagerKpiInOutLst: React.FC<any> = (props) => {
         </div>
       </div>
       <div className="content__table w-100" style={{ overflow: 'hidden' }}>
-        {/* <Table data={lstData} autoHeight={true}>
-          <Table.Column width={200}>
-            <Table.HeaderCell className="fw-bold">{'Tên khách'}</Table.HeaderCell>
-            <Table.Cell dataKey="name" />
-          </Table.Column>
-
-          <Table.Column width={200}>
-            <Table.HeaderCell className="fw-bold">{'Số giấy tờ'}</Table.HeaderCell>
-            <Table.Cell dataKey="numberPaper" />
-          </Table.Column>
-          <Table.Column width={200}>
-            <Table.HeaderCell className="fw-bold">{'Loại giấy tờ'}</Table.HeaderCell>
-            <Table.Cell dataKey="typePaper" />
-          </Table.Column>
-          <Table.Column width={200}>
-            <Table.HeaderCell className="fw-bold">{'Công ty'}</Table.HeaderCell>
-            <Table.Cell dataKey="company" />
-          </Table.Column>
-
-          <Table.Column width={200}>
-            <Table.HeaderCell className="fw-bold">{'Đối tác của'}</Table.HeaderCell>
-            <Table.Cell dataKey="partner" />
-          </Table.Column>
-
-          <Table.Column width={200} align="center">
-            <Table.HeaderCell className="fw-bold">{'Thời gian làm việc'}</Table.HeaderCell>
-            <Table.Cell style={{ padding: 6 }}>
-              {(rowData) => {
-                return (
-                  <>
-                    <p className="m-0">
-                      {moment(rowData.timeWorkStart).format('DD-MM-YYYY h:mm:ss')}
-                    </p>
-                    <p className="m-0">
-                      {moment(rowData.timeWorkEnd).format('DD-MM-YYYY h:mm:ss')}
-                    </p>
-                  </>
-                );
-              }}
-            </Table.Cell>
-          </Table.Column>
-          <Table.Column width={200} align="center">
-            <Table.HeaderCell className="fw-bold">{'Thực tế in/out'}</Table.HeaderCell>
-            <Table.Cell style={{ padding: 6 }}>
-              {(rowData) => {
-                return (
-                  <>
-                    <p className="m-0">
-                      {moment(rowData.timeWorkStart).format('DD-MM-YYYY h:mm:ss')}
-                    </p>
-                    <p className="m-0">
-                      {moment(rowData.timeWorkEnd).format('DD-MM-YYYY h:mm:ss')}
-                    </p>
-                  </>
-                );
-              }}
-            </Table.Cell>
-          </Table.Column>
-        </Table> */}
         <table className="table w-100" style={{ overflowX: 'auto' }}>
           <thead className="table-secondary">
             <tr>
@@ -289,8 +461,8 @@ const ManagerKpiInOutLst: React.FC<any> = (props) => {
             </tr>
           </thead>
           <tbody>
-            {lstData.length ? (
-              lstData.map((item: any) => {
+            {newData.length ? (
+              newData.map((item: any) => {
                 return <TableKpiItem key={item.id} tableKpiItem={item} />;
               })
             ) : (

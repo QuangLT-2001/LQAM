@@ -16,7 +16,7 @@ import FormComponent from "./Form/form";
 import { authSlice as ContractSlice } from "../features/auth/authSlice";
 import { getAll as fetData } from "../services/helper"
 import { getContract } from "../features/auth/authSlice";
-import TableStandard from "./Table/tableStandard";
+import TableStandard from "../components/Table/tableStandard";
 import { IconButton, ButtonToolbar, InputGroup } from "rsuite";
 import AddOutLineIcon from "@rsuite/icons/AddOutline"
 import SearchIcon from "@rsuite/icons/Search"
