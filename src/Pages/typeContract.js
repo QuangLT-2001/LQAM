@@ -63,9 +63,6 @@ const Contract = () => {
                <InputComponent value={value} onChange={setValue} placeholder="Tìm kiếm" icon={<InputGroup.Addon>
                     <SearchIcon />
                </InputGroup.Addon>} style={{ width: "450px", marginBottom: 10 }} />
-               {/* <ButtonToolbar>
-                    <IconButton icon={AddOutLineIcon} placement="left">Thêm mới</IconButton>
-               </ButtonToolbar> */}
                <ButtonToolbar className="ms-3" onClick={handleCloseOpen}>
                     <IconButton icon={<AddOutLineIcon />} placement="left">Thêm mới</IconButton>
                </ButtonToolbar>

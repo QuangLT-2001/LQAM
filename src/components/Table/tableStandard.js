@@ -90,15 +90,17 @@ const TableStandard = (props) => {
      }
      const selectFilter = [{
           id: 1,
-          name: "ASC",
+          name: "Sắp xếp tăng dần",
+          keySelect: "ASC"
      }, {
           id: 2,
-          name: "DESC"
+          name: "Sắp xếp giảm dần",
+          keySelect: "DESC"
      }]
      const getCurrentSortBy = () => {
-          const col = selectFilter.find(item => item.name == sortBy)
+          const col = selectFilter.find(item => item.keySelect == sortBy)
           if (col) return col.name;
-          return "Default"
+          return "---Default---"
      }
      // let sortData = data.reverse()
      let lstData = getData()
@@ -131,12 +133,12 @@ const TableStandard = (props) => {
 
                               selectFilter.map(item => {
 
-                                   return (<Dropdown.Item onClick={() => setSortBy(item.name)} key={uuidv4()}
+                                   return (<Dropdown.Item onClick={() => setSortBy(item.keySelect)} key={uuidv4()}
                                         style={{ width: 200, display: "flex", justifyContent: "space-between" }}
-                                        className={sortBy == item.name ? "text-green" : ""}
+                                        className={sortBy == item.keySelect ? "text-success" : ""}
                                    >
                                         {item.name}
-                                        {item.name == sortBy ? <FontAwesomeIcon icon={faCheck} /> : <></>}
+                                        {item.keySelect == sortBy ? <FontAwesomeIcon icon={faCheck} /> : <></>}
                                    </Dropdown.Item>)
 
                               })

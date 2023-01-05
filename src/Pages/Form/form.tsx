@@ -16,7 +16,6 @@ type FormProps = {
 }
 const FormComponent:React.FC<FormProps> = (props) => {
      const {open, handleCloseOpen, setOpen, state, setState,url} = props
-     const [status, setStatus] = useState(true)
 
      const data = [
           {

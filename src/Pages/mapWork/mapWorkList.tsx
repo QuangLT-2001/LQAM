@@ -92,17 +92,19 @@ const MapWorkList = () => {
   const selectFilter = [
     {
       id: 1,
-      name: 'ASC',
+      name: 'Sắp xếp tăng dần',
+      keySelect: 'ASC',
     },
     {
       id: 2,
-      name: 'DESC',
+      name: 'Sắp xếp giảm dần',
+      keySelect: 'DESC',
     },
   ];
   const getCurrentSortBy = () => {
-    const col = selectFilter.find((item) => item.name == sortBy);
+    const col = selectFilter.find((item) => item.keySelect == sortBy);
     if (col) return col.name;
-    return 'Name';
+    return '---Default---';
   };
   // let sortData = data.reverse()
   const handleCloseOpen = () => {
@@ -167,10 +169,10 @@ const MapWorkList = () => {
             {selectFilter.map((item) => {
               return (
                 <Dropdown.Item
-                  onClick={() => setSortBy(item.name)}
+                  onClick={() => setSortBy(item.keySelect)}
                   key={uuidv4()}
                   style={{ width: 200, display: 'flex', justifyContent: 'space-between' }}
-                  className={sortBy == item.name ? 'text-green' : ''}
+                  className={sortBy == item.keySelect ? 'text-success' : ''}
                 >
                   {item.name}
                   {item.name == sortBy ? <FontAwesomeIcon icon={faCheck} /> : <></>}

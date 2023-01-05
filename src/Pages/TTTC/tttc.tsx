@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import ButtonComponent from "components/button";
-import { getLishMentByCode, postLishMent, putLishMent, TLishMentState } from "features/auth/authSlice";
-import React, {useState, useEffect, useRef} from "react"
+import { getLishMentByCode, postLishMent, putLishMent } from "features/auth/authSlice";
+import React, {useState, useEffect} from "react"
 import {Form, SelectPicker, Input, Toggle} from "rsuite"
 import {useParams, useNavigate} from "react-router-dom"
 import { selectLishMentDetail } from "features/auth/authSlice";
